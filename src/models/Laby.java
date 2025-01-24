@@ -2,10 +2,84 @@ package models;
 
 import java.util.*;
 
-class Laby {
-    int hauteur, largeur;
-    Sommet entree, sortie;
-    ListeSommets[][] voisins;
+public class Laby {
+    private int hauteur, largeur;
+    private Sommet entree, sortie;
+    private ListeSommets[][] voisins;
+
+    //getters and setters
+    public int getHauteur() {
+        return hauteur;
+    }
+
+    public int getLargeur() {
+        return largeur;
+    }
+
+    public void setHauteur(int hauteur) {
+        if (hauteur > 0) {
+            this.hauteur = hauteur;
+        } else {
+            throw new IllegalArgumentException("Hauteur must be a positive integer");
+        }
+    }
+
+    public void setLargeur(int largeur) {
+        if (largeur > 0) {
+            this.largeur = largeur;
+        } else {
+            throw new IllegalArgumentException("Largeur must be a positive integer");
+        }
+    }
+
+    public Sommet getEntree() {
+        return entree;
+    }
+
+    public Sommet getSortie() {
+        return sortie;
+    }
+
+    public void setEntree(Sommet entree) {
+        if (entree != null) {
+            this.entree = entree;
+        } else {
+            throw new IllegalArgumentException("Entree cannot be null");
+        }
+    }
+
+    public void setSortie(Sommet sortie) {
+        if (sortie != null) {
+            this.sortie = sortie;
+        } else {
+            throw new IllegalArgumentException("Sortie cannot be null");
+        }
+    }
+
+    public ListeSommets[][] getVoisins() {
+        // Create a deep copy to prevent direct manipulation
+        ListeSommets[][] copieVoisins = new ListeSommets[voisins.length][];
+        for (int i = 0; i < voisins.length; i++) {
+            copieVoisins[i] = voisins[i].clone();
+        }
+        return copieVoisins;
+    }
+
+    public void setVoisins(ListeSommets[][] voisins) {
+        if (voisins != null && voisins.length > 0) {
+            this.voisins = new ListeSommets[voisins.length][];
+            for (int i = 0; i < voisins.length; i++) {
+                this.voisins[i] = voisins[i].clone();
+            }
+        } else {
+            throw new IllegalArgumentException("Voisins must be a non-empty 2D array");
+        }
+    }
+
+
+
+
+
     Random random = new Random();
     //charctére au hazard
     private char getRandomChar() {
@@ -29,7 +103,7 @@ class Laby {
 
     private void generationLaby() {
         boolean[][] visited = new boolean[hauteur][largeur];
-        generationLabyRecursive(entree.i, entree.j, visited);
+        generationLabyRecursive(entree.getI(), entree.getJ(), visited);
     }
 
     //Génération Laby DFS (Profondeur)
@@ -62,16 +136,16 @@ class Laby {
     }
 
     public ListeSommets getVoisins(Sommet s) {
-        return voisins[s.i][s.j];
+        return voisins[s.getI()][s.getJ()];
     }
 
     public boolean canMoveTo(Sommet current, Sommet target) {
         ListeSommets neighbors = getVoisins(current);
         while (neighbors != null) {
-            if (neighbors.val.equals(target)) {
+            if (neighbors.getVal().equals(target)) {
                 return true;
             }
-            neighbors = neighbors.suivant;
+            neighbors = neighbors.getSuivant();
         }
         return false;
     }
@@ -82,8 +156,8 @@ class Laby {
                 System.out.print("(" + i + "," + j + ") -> ");
                 ListeSommets neighbors = voisins[i][j];
                 while (neighbors != null) {
-                    System.out.print(neighbors.val + " ");
-                    neighbors = neighbors.suivant;
+                    System.out.print(neighbors.getVal() + " ");
+                    neighbors = neighbors.getSuivant();
                 }
                 System.out.println();
             }
