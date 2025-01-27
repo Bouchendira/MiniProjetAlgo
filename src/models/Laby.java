@@ -90,21 +90,58 @@ public class Laby {
     public Laby(int hauteur, int largeur) {
         this.hauteur = hauteur;
         this.largeur = largeur;
-
         this.voisins = new ListeSommets[hauteur][largeur];
-        Random r = new Random();
-        char randomChar = (char) (r.nextInt(26) + 'a');
-        //initialistion
-        this.entree = new Sommet(0, 0,getRandomChar());
-        this.sortie = new Sommet(hauteur - 1, largeur - 1,getRandomChar());
+        generateRandomChar(hauteur,largeur);
+        //initialistion (I used N a place holder for Null cause)
+        //Upper case cause all the other letters are lower case
+        this.entree = new Sommet(0, 0, c[0][0]);
+        this.sortie = new Sommet(hauteur - 1, largeur - 1, c[hauteur-1][largeur-1]);
+
         //génération
         generationLaby();
     }
+    //Géneration Liste aléatoirede charactéres
+    protected char[][] c;
+    public void generateRandomChar(int hauteur, int largeur){
+        Random r = new Random();
+        c = new char[hauteur][largeur];
+
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+                c[i][j] = (char) (r.nextInt(26) + 'a');
+            }
+        }
+    }
+
+
 
     private void generationLaby() {
+        // Initialize all cells with default Sommets
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+                voisins[i][j] = new ListeSommets(new Sommet(i, j, c[i][j]), null);
+            }
+        }
         boolean[][] visited = new boolean[hauteur][largeur];
         generationLabyRecursive(entree.getI(), entree.getJ(), visited);
     }
+
+    public Sommet getSommet(int i, int j) {
+        // Retourne le sommet à la position (i, j)
+        if (isValid(i, j)) {
+            ListeSommets voisinsList = voisins[i][j];
+            while (voisinsList != null) {
+                Sommet sommet = voisinsList.getVal();
+                if (sommet.getI() == i && sommet.getJ() == j) {
+                    return sommet;
+                }
+                voisinsList = voisinsList.getSuivant();
+            }
+        }
+        // Si aucun sommet n'est trouvé, retourner un sommet par défaut
+        return new Sommet(i, j, ' ');
+    }
+
 
     //Génération Laby DFS (Profondeur)
     private void generationLabyRecursive(int i, int j, boolean[][] visited) {
@@ -121,8 +158,8 @@ public class Laby {
 
             if (isValid(newI, newJ) && !visited[newI][newJ]) {
 
-                Sommet current = new Sommet(i, j,getRandomChar());
-                Sommet next = new Sommet(newI, newJ,getRandomChar());
+                Sommet current = new Sommet(i, j,c[i][j]);
+                Sommet next = new Sommet(newI, newJ,c[newI][newJ]);
                 voisins[i][j] = new ListeSommets(next, voisins[i][j]);
                 voisins[newI][newJ] = new ListeSommets(current, voisins[newI][newJ]);
 
@@ -167,9 +204,13 @@ public class Laby {
     public static void main(String[] args) {
 
         Laby maze = new Laby(7, 5);
+        Sommet sommet = maze.getSommet(4, 4);
+        System.out.println("TEST");
+        System.out.println(sommet);
         System.out.println("Labyrinthe");
         System.out.println("Entry : " + maze.entree);
         System.out.println("Exit : " + maze.sortie);
+
         maze.printMaze();
     }
     //FIN TEST
