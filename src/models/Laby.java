@@ -201,17 +201,5 @@ public class Laby {
         }
     }
 
-    public static void main(String[] args) {
 
-        Laby maze = new Laby(7, 5);
-        Sommet sommet = maze.getSommet(4, 4);
-        System.out.println("TEST");
-        System.out.println(sommet);
-        System.out.println("Labyrinthe");
-        System.out.println("Entry : " + maze.entree);
-        System.out.println("Exit : " + maze.sortie);
-
-        maze.printMaze();
-    }
-    //FIN TEST
 }
