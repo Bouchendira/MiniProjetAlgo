@@ -22,4 +22,9 @@ public class ListeSommets {
         this.suivant = suivant;
     }
 
+    ListeSommets(Sommet val) {
+        this.val = val;
+        this.suivant = null;
+    }
+
 }

@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Objects;
+
 public class Sommet {
     private int i,j;
     private char c;
@@ -32,5 +34,10 @@ public class Sommet {
 
     public String toString() {
         return ("<" + i + ", " + j +", " + c + ">") ;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(i, j);
     }
 }

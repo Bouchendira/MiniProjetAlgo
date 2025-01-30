@@ -58,11 +58,11 @@ public class Laby {
 
     public ListeSommets[][] getVoisins() {
         // Create a deep copy to prevent direct manipulation
-        ListeSommets[][] copieVoisins = new ListeSommets[voisins.length][];
-        for (int i = 0; i < voisins.length; i++) {
-            copieVoisins[i] = voisins[i].clone();
-        }
-        return copieVoisins;
+       // ListeSommets[][] copieVoisins = new ListeSommets[voisins.length][];
+        //for (int i = 0; i < voisins.length; i++) {
+          //  copieVoisins[i] = voisins[i].clone();
+       //}
+        return this.voisins;
     }
 
     public void setVoisins(ListeSommets[][] voisins) {

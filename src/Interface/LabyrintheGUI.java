@@ -3,6 +3,7 @@ package Interface;
 import models.Laby;
 import models.Sommet;
 import models.ListeSommets;
+import models.Parcours;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,10 +20,12 @@ public class LabyrintheGUI extends JFrame {
     private Sommet playerPosition; // Position actuelle du joueur
     private Victory victoryPanel;
     private JLabel scoreLabel;
+    public ListeSommets solution;
 
     public LabyrintheGUI(Laby laby) {
         this.laby = laby;
         this.playerPosition = laby.getEntree(); // Le joueur commence à l'entrée
+        this.solution = null ;
         init();
     }
 
@@ -40,7 +43,21 @@ public class LabyrintheGUI extends JFrame {
         scoreLabel = new JLabel("Score: 0");
         JButton newMazeButton = new JButton("Nouveau Labyrinthe");
         newMazeButton.addActionListener(e -> resetGame());
+        ////////////////////////
+
+        ImageIcon originalIcon = new ImageIcon("C:\\Users\\MSI\\eclipse-workspace\\MiniProjetAlgo\\src\\Interface\\2345321.png");
+        Image img = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH); // Ajuste la taille ici
+        ImageIcon resizedIcon = new ImageIcon(img);
         
+        JButton shortPathButton = new JButton();
+        shortPathButton.addActionListener(e -> findSolution());
+        shortPathButton.setIcon(resizedIcon);
+        JPanel shortPathButtonPanel = new JPanel(new BorderLayout());
+        shortPathButtonPanel.setBorder(new EmptyBorder(10, 10, 10, 0)); // Top, Left, Bottom, Right
+        shortPathButtonPanel.add(shortPathButton, BorderLayout.EAST);
+        
+        
+        ////////////////////
         // Wrap the label in a JPanel and add margins
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Top, Left, Bottom, Right
@@ -48,7 +65,7 @@ public class LabyrintheGUI extends JFrame {
 
         // Wrap the button in a JPanel and add margins
         JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Top, Left, Bottom, Right
+        buttonPanel.setBorder(new EmptyBorder(10, 0, 10, 10)); // Top, Left, Bottom, Right
         buttonPanel.add(newMazeButton, BorderLayout.EAST);
         
         // Style du bouton
@@ -66,11 +83,12 @@ public class LabyrintheGUI extends JFrame {
         // Add the wrapped components to the top panel
         topPanel.add(labelPanel); // Add label to the left
         topPanel.add(buttonPanel); // Add button to the right
+        topPanel.add(shortPathButtonPanel);
 
        
         // Création et ajout des panneaux dans le bon ordre
         // Le dernier ajouté sera au-dessus
-        gridPanel = new LabyrinthePanel(laby, playerPosition);
+        gridPanel = new LabyrinthePanel(laby, playerPosition,solution);
         gridPanel.setBounds(0, 150, 800, 500); // Position le labyrinthe plus bas
         victoryPanel = new Victory();
         victoryPanel.setVisible(false);
@@ -141,6 +159,17 @@ public class LabyrintheGUI extends JFrame {
             }
         }
     }
+    
+    private void findSolution() {
+    	Parcours p = new Parcours();
+        ListeSommets l =p.findShortestPath(laby.getVoisins(),laby.getEntree(),laby.getSortie());
+        
+    	gridPanel.setSolution(l);
+    	 
+    	
+    }
+    
+    
     private void resetGame() {
     	// Ferme toutes les fenêtres ouvertes
         for (Window window : Window.getWindows()) {
@@ -177,21 +206,27 @@ public class LabyrintheGUI extends JFrame {
     public static void main(String[] args) {
         // Créer le labyrinthe
         Laby laby = new Laby(15,14);
+       
 
         // Lancer l'application
         SwingUtilities.invokeLater(() -> {
             LabyrintheGUI gui = new LabyrintheGUI(laby);
             gui.setVisible(true);
+           
         });
+        
+       
     }
 
     private static class LabyrinthePanel extends JPanel {
         private Laby laby;
         private Sommet playerPosition;
+        private ListeSommets solution;
 
-        public LabyrinthePanel(Laby laby, Sommet playerPosition) {
+        public LabyrinthePanel(Laby laby, Sommet playerPosition , ListeSommets solution) {
             this.laby = laby;
             this.playerPosition = playerPosition;
+            this.solution = solution ;
         }
         
         @Override
@@ -203,6 +238,12 @@ public class LabyrintheGUI extends JFrame {
             this.playerPosition = playerPosition;
             repaint(); // Redessiner le labyrinthe avec la nouvelle position du joueur
         }
+        
+        public void setSolution(ListeSommets l) {
+            this.solution = l;
+            repaint(); // Redessiner le labyrinthe avec la nouvelle position du joueur
+        }
+        
 
         @Override
         protected void paintComponent(Graphics g) {
@@ -212,6 +253,9 @@ public class LabyrintheGUI extends JFrame {
             int cols = laby.getLargeur();
             int cellWidth = getWidth() / cols;
             int cellHeight = getHeight() / rows;
+            
+            
+
 
             // Dessiner les cellules et les murs
             for (int i = 0; i < rows; i++) {
@@ -220,6 +264,7 @@ public class LabyrintheGUI extends JFrame {
                     int x = j * cellWidth;
                     int y = i * cellHeight;
 
+                    
                     // Dessiner la cellule (entrée, sortie ou vide)
                     if (laby.getEntree().getI() == i && laby.getEntree().getJ() == j) {
                         g.setColor(new Color(0xfc9410));
@@ -231,6 +276,23 @@ public class LabyrintheGUI extends JFrame {
                         g.setColor(Color.WHITE);
                         g.fillRect(x, y, cellWidth, cellHeight);
                     }
+                    
+                    //plus court chemain
+
+                    ListeSommets l = solution;
+                    while (l != null) {
+                    	
+                    	int a = l.getVal().getJ();
+                        int b = l.getVal().getI();
+                        if(a==j && b==i) {
+                        	g.setColor(new Color(0xfd9410));
+                            g.fillRect(x, y, cellWidth, cellHeight);                           
+                        }
+                     	l=l.getSuivant();   
+                     	
+
+                     }
+                    
 
                     // Dessiner la lettre du sommet
                     Sommet sommet = laby.getSommet(i, j);
@@ -246,7 +308,8 @@ public class LabyrintheGUI extends JFrame {
 
                     g.setColor(Color.BLACK);
                     g.drawRect(x, y, cellWidth, cellHeight);
-
+                    
+                   
                     // Dessiner les murs autour de la cellule
                     drawWalls(g, i, j, x, y, cellWidth, cellHeight);
                 }
@@ -257,9 +320,13 @@ public class LabyrintheGUI extends JFrame {
             int playerY = playerPosition.getI() * cellHeight;
             g.setColor(new Color(70, 130, 180));
             g.fillOval(playerX + cellWidth / 8, playerY + cellHeight /8, cellWidth / 4, cellHeight / 4);
+            
+
         }
 
-        private void drawWalls(Graphics g, int i, int j, int x, int y, int cellWidth, int cellHeight) {
+
+
+		private void drawWalls(Graphics g, int i, int j, int x, int y, int cellWidth, int cellHeight) {
             ListeSommets neighbors = laby.getVoisins(new Sommet(i, j, ' '));
 
             // Initialiser les murs (tous activés par défaut)
