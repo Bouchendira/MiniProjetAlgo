@@ -57,12 +57,12 @@ public class Laby {
     }
 
     public ListeSommets[][] getVoisins() {
-        // Create a deep copy to prevent direct manipulation
-       // ListeSommets[][] copieVoisins = new ListeSommets[voisins.length][];
-        //for (int i = 0; i < voisins.length; i++) {
-          //  copieVoisins[i] = voisins[i].clone();
-       //}
-        return this.voisins;
+        ListeSommets[][] copieVoisins = new ListeSommets[voisins.length][];
+        for (int i = 0; i < voisins.length; i++) {
+            copieVoisins[i] = voisins[i].clone();
+        }
+
+        return copieVoisins;
     }
 
     public void setVoisins(ListeSommets[][] voisins) {
@@ -79,7 +79,7 @@ public class Laby {
 
 
 
-
+    protected char[][] c;
     Random random = new Random();
     //charctére au hazard
     private char getRandomChar() {
@@ -101,7 +101,7 @@ public class Laby {
         generationLaby();
     }
     //Géneration Liste aléatoirede charactéres
-    protected char[][] c;
+
     public void generateRandomChar(int hauteur, int largeur){
         Random r = new Random();
         c = new char[hauteur][largeur];
