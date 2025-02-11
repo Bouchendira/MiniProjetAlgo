@@ -13,7 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
+import javax.swing.plaf.basic.BasicComboBoxUI;
 public class LabyrintheGUI extends JFrame {
     private Laby laby;
     private LabyrinthePanel gridPanel;
@@ -21,6 +21,7 @@ public class LabyrintheGUI extends JFrame {
     private Victory victoryPanel;
     private JLabel scoreLabel;
     public ListeSommets solution;
+    private String currentDifficulty = "Facile";
 
     public LabyrintheGUI(Laby laby) {
         this.laby = laby;
@@ -35,16 +36,61 @@ public class LabyrintheGUI extends JFrame {
         setSize(800, 600);
         setLayout(new BorderLayout());// Un seul layout manager
         
-        // Barre supérieure avec le score et le bouton
+        // Barre supérieure avec le score
         JPanel topPanel = new JPanel();
         topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS)); 
-        
-        
         scoreLabel = new JLabel("Score: 0");
-        JButton newMazeButton = new JButton("Nouveau Labyrinthe");
-        newMazeButton.addActionListener(e -> resetGame());
-        ////////////////////////
+        
+        // Create difficulty selector
+        String[] difficulties = {"Facile", "Moyenne", "Difficile"};
+        JComboBox<String> difficultySelector = new JComboBox<>(difficulties);
+        difficultySelector.setFont(new Font("Arial", Font.BOLD, 12));
+        difficultySelector.setPreferredSize(new Dimension(100, 40));
+        difficultySelector.setBackground(new Color(60, 63, 65)); // Dark theme
+        difficultySelector.setForeground(Color.BLACK);
+        difficultySelector.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(255, 215, 0), 2), // Gold border
+            BorderFactory.createEmptyBorder(5, 10, 5, 10)
+        ));
 
+     // Ensure renderer is a JLabel before setting alignment
+        difficultySelector.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component component = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (component instanceof JLabel label) {
+                    label.setHorizontalAlignment(SwingConstants.CENTER);
+                    if (isSelected) {
+                        label.setBackground(new Color(255, 215, 0)); // Highlight selected item
+                        label.setForeground(Color.BLACK);
+                    }
+                }
+                return component;
+            }
+        });
+        
+        difficultySelector.setUI(new BasicComboBoxUI() {
+            protected JButton createArrowButton() {
+                JButton button = new JButton("▼"); // Custom arrow symbol
+                button.setFont(new Font("Arial", Font.BOLD, 10));
+                button.setPreferredSize(new Dimension(5, 5));
+                button.setBorder(BorderFactory.createEmptyBorder());
+                button.setBackground(new Color(255, 215, 0)); // Gold button
+                button.setFocusPainted(false); // Remove focus border
+                return button;
+            }
+        });
+        // Add action listener for difficulty changes
+        difficultySelector.addActionListener(e -> {
+            String newDifficulty = (String) difficultySelector.getSelectedItem();
+            if (!newDifficulty.equals(currentDifficulty)) {
+                currentDifficulty = newDifficulty;
+                createNewMaze();
+            }
+        });
+
+        ////////////////////////
+      
         ImageIcon originalIcon = new ImageIcon("C:\\Users\\MSI\\eclipse-workspace\\MiniProjetAlgo\\src\\Interface\\2345321.png");
         Image img = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH); // Ajuste la taille ici
         ImageIcon resizedIcon = new ImageIcon(img);
@@ -52,38 +98,90 @@ public class LabyrintheGUI extends JFrame {
         JButton shortPathButton = new JButton();
         shortPathButton.addActionListener(e -> findSolution());
         shortPathButton.setIcon(resizedIcon);
+
+        shortPathButton.setPreferredSize(new Dimension(40, 40)); // Taille plus petite
+        shortPathButton.setBackground(new Color(60, 63, 65)); // Même couleur sombre que le JComboBox
+        shortPathButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(255, 215, 0), 2), // Bordure dorée
+            BorderFactory.createEmptyBorder(5, 5, 5, 5) // Espace intérieur
+        ));
+        shortPathButton.setFocusPainted(false); // Désactiver l'effet de focus
+        shortPathButton.setContentAreaFilled(true); // Remplir le fond
+        shortPathButton.setOpaque(true);
+        
+     // Effet au survol (hover effect)
+        shortPathButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                shortPathButton.setBackground(new Color(255, 215, 0)); // Devient doré au survol
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                shortPathButton.setBackground(new Color(60, 63, 65)); // Reprend la couleur sombre
+            }
+        });
+        
         JPanel shortPathButtonPanel = new JPanel(new BorderLayout());
         shortPathButtonPanel.setBorder(new EmptyBorder(10, 10, 10, 0)); // Top, Left, Bottom, Right
         shortPathButtonPanel.add(shortPathButton, BorderLayout.EAST);
         
-        
         ////////////////////
+        ImageIcon originalIcon1 = new ImageIcon("C:\\Users\\MSI\\eclipse-workspace\\MiniProjetAlgo\\src\\Interface\\1248862.png");
+        Image img1 = originalIcon1.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH); // Ajuste la taille ici
+        ImageIcon resizedIcon1 = new ImageIcon(img1);
+        
+        JButton NouveauButton = new JButton();
+        NouveauButton.addActionListener(e -> resetGame());
+        NouveauButton.setIcon(resizedIcon1);
+
+        NouveauButton.setPreferredSize(new Dimension(40, 40)); // Taille plus petite
+        NouveauButton.setBackground(new Color(60, 63, 65)); // Même couleur sombre que le JComboBox
+        NouveauButton.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(255, 215, 0), 2), // Bordure dorée
+            BorderFactory.createEmptyBorder(5, 5, 5, 5) // Espace intérieur
+        ));
+        NouveauButton.setFocusPainted(false); // Désactiver l'effet de focus
+        NouveauButton.setContentAreaFilled(true); // Remplir le fond
+        NouveauButton.setOpaque(true);
+        
+     // Effet au survol (hover effect)
+        shortPathButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                shortPathButton.setBackground(new Color(255, 215, 0)); // Devient doré au survol
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                shortPathButton.setBackground(new Color(60, 63, 65)); // Reprend la couleur sombre
+            }
+        });
+        
+        JPanel NouveauButtonPanel = new JPanel(new BorderLayout());
+        NouveauButtonPanel.setBorder(new EmptyBorder(10, 10, 10, 0)); // Top, Left, Bottom, Right
+        NouveauButtonPanel.add(NouveauButton, BorderLayout.EAST);
+        
+        ///////////////////
         // Wrap the label in a JPanel and add margins
         JPanel labelPanel = new JPanel(new BorderLayout());
         labelPanel.setBorder(new EmptyBorder(10, 10, 10, 10)); // Top, Left, Bottom, Right
         labelPanel.add(scoreLabel, BorderLayout.WEST);
-
-        // Wrap the button in a JPanel and add margins
-        JPanel buttonPanel = new JPanel(new BorderLayout());
-        buttonPanel.setBorder(new EmptyBorder(10, 0, 10, 10)); // Top, Left, Bottom, Right
-        buttonPanel.add(newMazeButton, BorderLayout.EAST);
         
-        // Style du bouton
-        newMazeButton.setBackground(new Color(70, 130, 180)); // Couleur de fond
-        newMazeButton.setForeground(Color.WHITE); // Couleur du texte
-        newMazeButton.setFont(new Font("Arial", Font.BOLD, 14)); // Police en gras
-        newMazeButton.setFocusPainted(false); // Désactiver la bordure de focus
-
-        // Bordure arrondie
-        newMazeButton.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(new Color(0, 0, 0), 2), // Bordure extérieure
-            BorderFactory.createEmptyBorder(10, 20, 10, 20) // Marge intérieure
-        ));
+        // Create a panel for the difficulty selector with margins
+        JPanel selectorPanel = new JPanel(new BorderLayout());
+        selectorPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        selectorPanel.add(difficultySelector, BorderLayout.CENTER);
 
         // Add the wrapped components to the top panel
-        topPanel.add(labelPanel); // Add label to the left
-        topPanel.add(buttonPanel); // Add button to the right
-        topPanel.add(shortPathButtonPanel);
+
+        JPanel leftPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5)); // Espacement réduit (5px)
+        leftPanel.setOpaque(false); // Fond transparent
+        leftPanel.add(NouveauButtonPanel);
+        leftPanel.add(shortPathButtonPanel);
+        leftPanel.add(selectorPanel);
+        topPanel.add(labelPanel); 
+        topPanel.add(leftPanel);
 
        
         // Création et ajout des panneaux dans le bon ordre
@@ -98,9 +196,7 @@ public class LabyrintheGUI extends JFrame {
         gamePanel.setLayout(new OverlayLayout(gamePanel));  // Utiliser OverlayLayout seulement ici
         gamePanel.add(victoryPanel);
         gamePanel.add(gridPanel);
-        
-
-        
+           
         add(topPanel, BorderLayout.NORTH);
         add(gamePanel, BorderLayout.CENTER); // Ajoutez gamePanel avec OverlayLayout ici
         // Gestion des événements souris
@@ -131,6 +227,10 @@ public class LabyrintheGUI extends JFrame {
         setFocusable(true);
         requestFocusInWindow();
     }
+
+    
+    
+    
 
     private void handlePlayerMovement(int key) {
         int i = playerPosition.getI();
@@ -169,18 +269,53 @@ public class LabyrintheGUI extends JFrame {
     	
     }
     
+    // New method to create maze based on current difficulty
+    private void createNewMaze() {
+        int size;
+        switch (currentDifficulty) {
+            case "Difficile":
+                size = 15;
+                break;
+            case "Moyenne":
+                size = 12;
+                break;
+            default:
+                size = 10;
+                break;
+        }
+        
+        // Create new maze with selected size
+        Laby newLaby = new Laby(size, size, "C:/Users/MSI/eclipse-workspace/MiniProjetAlgo/src/models/dictionnaire");
+        
+        // Update the current window instead of creating a new one
+        this.laby = newLaby;
+        this.playerPosition = newLaby.getEntree();
+        this.solution = null;
+        
+        // Update the display
+        gridPanel.setLaby(newLaby);
+        gridPanel.setPlayerPosition(playerPosition);
+        gridPanel.setSolution(null);
+        gridPanel.repaint();
+        
+        // Reset victory panel
+        victoryPanel.setVisible(false);
+        
+        // Ensure focus for keyboard controls
+        requestFocusInWindow();
+    }
+    
     
     private void resetGame() {
+    	
+    	createNewMaze();
     	// Ferme toutes les fenêtres ouvertes
         for (Window window : Window.getWindows()) {
             if (window instanceof JFrame) {
                 window.dispose();
             }
         }
-        
-        // Réinitialisation du jeu
-        Laby laby = new Laby(15,14);
-
+       
         // Crée une nouvelle interface
         SwingUtilities.invokeLater(() -> {
             LabyrintheGUI gui = new LabyrintheGUI(laby);
@@ -205,7 +340,7 @@ public class LabyrintheGUI extends JFrame {
 
     public static void main(String[] args) {
         // Créer le labyrinthe
-        Laby laby = new Laby(15,14);
+    	Laby laby = new Laby(10, 10, "C:/Users/MSI/eclipse-workspace/MiniProjetAlgo/src/models/dictionnaire");
        
 
         // Lancer l'application
@@ -227,6 +362,10 @@ public class LabyrintheGUI extends JFrame {
             this.laby = laby;
             this.playerPosition = playerPosition;
             this.solution = solution ;
+        }
+        
+        public void setLaby(Laby laby) {
+            this.laby = laby;
         }
         
         @Override
