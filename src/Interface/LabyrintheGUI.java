@@ -285,7 +285,7 @@ public class LabyrintheGUI extends JFrame {
         }
         
         // Create new maze with selected size
-        Laby newLaby = new Laby(size, size, "C:/Users/MSI/eclipse-workspace/MiniProjetAlgo/src/models/dictionnaire");
+        Laby newLaby = new Laby(size, size, "src/models/dictionnaire");
         
         // Update the current window instead of creating a new one
         this.laby = newLaby;
@@ -340,7 +340,7 @@ public class LabyrintheGUI extends JFrame {
 
     public static void main(String[] args) {
         // Créer le labyrinthe
-    	Laby laby = new Laby(10, 10, "C:/Users/MSI/eclipse-workspace/MiniProjetAlgo/src/models/dictionnaire");
+    	Laby laby = new Laby(10, 10, "src/models/dictionnaire");
        
 
         // Lancer l'application
