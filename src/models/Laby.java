@@ -70,16 +70,7 @@ public class Laby {
         return copieVoisins;
     }
 
-    public void setVoisins(ListeSommets[][] voisins) {
-        if (voisins != null && voisins.length > 0) {
-            this.voisins = new ListeSommets[voisins.length][];
-            for (int i = 0; i < voisins.length; i++) {
-                this.voisins[i] = voisins[i].clone();
-            }
-        } else {
-            throw new IllegalArgumentException("Voisins must be a non-empty 2D array");
-        }
-    }
+
 
     // Load dictionary words
     private void loadDictionaryWords(String filePath) {
@@ -92,7 +83,6 @@ public class Laby {
             if (dictionaryWords.isEmpty()) {
                 throw new IllegalStateException("The dictionary file is empty.");
             }
-            System.out.println("Loaded words: " + dictionaryWords); // Debugging
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalStateException("Failed to load dictionary file: " + filePath, e);
@@ -105,17 +95,16 @@ public class Laby {
         this.largeur = largeur;
         this.voisins = new ListeSommets[hauteur][largeur];
         loadDictionaryWords(dictionaryFilePath); // Load dictionary words
-        generateRandomChar(hauteur, largeur); 
-        this.entree = new Sommet(0, 0, c[0][0]);
-        this.sortie = new Sommet(hauteur - 1, largeur - 1, c[hauteur - 1][largeur - 1]);
+        generateRandomChar(hauteur, largeur);
+
         generationLaby();
         addWordsToMaze();
+        this.entree = this.getSommet(0,0) ;
+        this.sortie = this.getSommet(hauteur - 1,largeur - 1);
+
     }
 
 
- 
-
-   
 
     // Generate maze with random characters (backward compatibility)
     public void generateRandomChar(int hauteur, int largeur) {
@@ -135,7 +124,7 @@ public class Laby {
             }
         }
         boolean[][] visited = new boolean[hauteur][largeur];
-        generationLabyRecursive(entree.getI(), entree.getJ(), visited);
+        generationLabyRecursive(0, 0, visited);
     }
 
     public Sommet getSommet(int i, int j) {
@@ -180,16 +169,6 @@ public class Laby {
         return voisins[s.getI()][s.getJ()];
     }
 
-    public boolean canMoveTo(Sommet current, Sommet target) {
-        ListeSommets neighbors = getVoisins(current);
-        while (neighbors != null) {
-            if (neighbors.getVal().equals(target)) {
-                return true;
-            }
-            neighbors = neighbors.getSuivant();
-        }
-        return false;
-    }
 
     // Print the maze
     public void printMaze() {
@@ -210,14 +189,14 @@ public class Laby {
         List<String> shuffledWords = new ArrayList<>(dictionaryWords);
         Collections.shuffle(shuffledWords, random);
         boolean[][] usedPositions = new boolean[hauteur][largeur];
-        
+
         // Keep track of potential starting positions (ends of placed words)
         Queue<int[]> chainStarts = new LinkedList<>();
-        
+
         // Place first word normally
         String firstWord = shuffledWords.get(0);
         boolean firstPlaced = false;
-        
+
         for (int i = 0; !firstPlaced && i < hauteur; i++) {
             for (int j = 0; !firstPlaced && j < largeur; j++) {
                 List<Sommet> path = findPathForWord(i, j, firstWord.length(), usedPositions);
@@ -235,20 +214,20 @@ public class Laby {
                 }
             }
         }
-        
+
         // Try to place remaining words
         for (int wordIndex = 1; wordIndex < shuffledWords.size(); wordIndex++) {
             String word = shuffledWords.get(wordIndex);
             if (word.length() > hauteur * largeur) continue;
-            
+
             boolean placed = false;
-            
+
             // First try to start from chain positions
             List<int[]> currentChainStarts = new ArrayList<>();
             while (!chainStarts.isEmpty()) {
                 currentChainStarts.add(chainStarts.poll());
             }
-            
+
             // Try each chain start position
             for (int[] start : currentChainStarts) {
                 if (!placed) {
@@ -267,7 +246,7 @@ public class Laby {
                     }
                 }
             }
-            
+
             // If couldn't chain, try placing normally
             if (!placed) {
                 for (int i = 0; !placed && i < hauteur; i++) {
@@ -291,13 +270,13 @@ public class Laby {
                 }
             }
         }
-        
+
         // Fill remaining positions with random characters
         for (int i = 0; i < hauteur; i++) {
             for (int j = 0; j < largeur; j++) {
                 if (!usedPositions[i][j]) {
                     Sommet sommet = getSommet(i, j);
-                    sommet.setC((char) (random.nextInt(26) + 'a'));
+                    sommet.setC(c[i][j]);
                 }
             }
         }
@@ -306,26 +285,26 @@ public class Laby {
 private List<Sommet> findPathForWord(int startI, int startJ, int length, boolean[][] usedPositions) {
     List<Sommet> path = new ArrayList<>();
     boolean[][] visited = new boolean[hauteur][largeur];
-    
+
     if (dfs(startI, startJ, length, visited, usedPositions, path)) {
         return path;
     }
     return null;
 }
 
-private boolean dfs(int i, int j, int remainingLength, boolean[][] visited, 
+private boolean dfs(int i, int j, int remainingLength, boolean[][] visited,
                    boolean[][] usedPositions, List<Sommet> path) {
     if (remainingLength == 0) {
         return true;
     }
-    
+
     if (!isValid(i, j) || visited[i][j] || usedPositions[i][j]) {
         return false;
     }
-    
+
     visited[i][j] = true;
     path.add(getSommet(i, j));
-    
+
     // Get neighbors and shuffle them
     ListeSommets neighbors = voisins[i][j];
     List<Sommet> neighborsList = new ArrayList<>();
@@ -334,14 +313,14 @@ private boolean dfs(int i, int j, int remainingLength, boolean[][] visited,
         neighbors = neighbors.getSuivant();
     }
     Collections.shuffle(neighborsList, random);
-    
+
     for (Sommet neighbor : neighborsList) {
-        if (dfs(neighbor.getI(), neighbor.getJ(), remainingLength - 1, 
+        if (dfs(neighbor.getI(), neighbor.getJ(), remainingLength - 1,
                 visited, usedPositions, path)) {
             return true;
         }
     }
-    
+
     visited[i][j] = false;
     path.remove(path.size() - 1);
     return false;
