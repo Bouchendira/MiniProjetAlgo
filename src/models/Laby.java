@@ -112,50 +112,10 @@ public class Laby {
         addWordsToMaze();
     }
 
-    // Constructor for random character generation (backward compatibility)
-    public Laby(int hauteur, int largeur) {
-        this.hauteur = hauteur;
-        this.largeur = largeur;
-        this.voisins = new ListeSommets[hauteur][largeur];
-        generateRandomChar(hauteur, largeur);
-        this.entree = new Sommet(0, 0, c[0][0]);
-        this.sortie = new Sommet(hauteur - 1, largeur - 1, c[hauteur - 1][largeur - 1]);
-        generationLaby();
-    }
-    
+
  
 
-    // Generate maze with words from dictionary
-    public void generateMazeWithWords(int hauteur, int largeur) {
-        c = new char[hauteur][largeur];
-        int wordIndex = 0; // Index to track the current word in the dictionary
-
-        for (int i = 0; i < hauteur; i++) {
-            for (int j = 0; j < largeur; j++) {
-                // Get the current word from the dictionary
-                String word = dictionaryWords.get(wordIndex % dictionaryWords.size());
-                // Place the word in the maze row by row
-                if (j + word.length() <= largeur) {
-                    for (int k = 0; k < word.length(); k++) {
-                        c[i][j + k] = word.charAt(k);
-                    }
-                    j += word.length() - 1; // Skip cells occupied by the word
-                } else {
-                    // If the word doesn't fit, fill the remaining cells with random characters
-                    c[i][j] = (char) (random.nextInt(26) + 'a');
-                }
-                wordIndex++; // Move to the next word
-            }
-        }
-
-        // Print the maze for debugging
-        for (int i = 0; i < hauteur; i++) {
-            for (int j = 0; j < largeur; j++) {
-                System.out.print(c[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
+   
 
     // Generate maze with random characters (backward compatibility)
     public void generateRandomChar(int hauteur, int largeur) {

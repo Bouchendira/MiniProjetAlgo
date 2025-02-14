@@ -49,6 +49,7 @@ public class Parcours {
             newNode.setSuivant(path);
             path = newNode;
         }
+        System.out.println(path);
 
         return path;
     }

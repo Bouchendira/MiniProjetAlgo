@@ -265,7 +265,17 @@ public class LabyrintheGUI extends JFrame {
         ListeSommets l =p.findShortestPath(laby.getVoisins(),laby.getEntree(),laby.getSortie());
         
     	gridPanel.setSolution(l);
-    	 
+    	if (l == null) {
+    	    System.out.println("Aucun chemin trouvé.");
+    	} else {
+    	    System.out.println("Chemin trouvé :");
+    	    ListeSommets current = l; // Commencer par le début de la liste
+    	    while (current != null) {
+    	        Sommet sommet = current.getVal(); // Récupérer le sommet courant
+    	        System.out.println("Sommet : (" + sommet.getI() + ", " + sommet.getJ() +", " + sommet.getC() + ")");
+    	        current = current.getSuivant(); // Passer au sommet suivant
+    	    }
+    	}
     	
     }
     
