@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Stack;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 public class LabyrintheGUI extends JFrame {
     private Laby laby;
@@ -22,6 +23,7 @@ public class LabyrintheGUI extends JFrame {
     private JLabel scoreLabel;
     public ListeSommets solution;
     private String currentDifficulty = "Facile";
+    private Stack<Sommet> sommetStack = new Stack<>();
 
     public LabyrintheGUI(Laby laby) {
         this.laby = laby;
@@ -239,19 +241,21 @@ public class LabyrintheGUI extends JFrame {
 
         // Vérifier les touches et définir la nouvelle position potentielle
         if (key == 38) {
-            newPosition = new Sommet(i - 1, j, ' ');
+            newPosition = laby.getSommet(i-1,j);
         } else if (key == 40) {
-            newPosition = new Sommet(i + 1, j, ' ');
+            newPosition = laby.getSommet(i + 1, j);
         } else if (key == 37) {
-            newPosition = new Sommet(i, j - 1, ' ');
+            newPosition = laby.getSommet(i, j - 1);
         } else if (key == 39) {
-            newPosition = new Sommet(i, j + 1, ' ');
+            newPosition = laby.getSommet(i, j + 1);
         }
 
         // Vérifier si le mouvement est valide (pas de mur)
         if (newPosition != null && isNeighbor(playerPosition, newPosition)) {
+            mot(playerPosition);// Mise à jour de la pile
+            System.out.println("Stack: " + stackToString());
             playerPosition = newPosition; // Déplacer le joueur
-    
+            mot(playerPosition);
             gridPanel.setPlayerPosition(playerPosition); // Mettre à jour l'affichage
             if (playerPosition.getI()==laby.getSortie().getI()&&playerPosition.getJ()==laby.getSortie().getJ()) {
             	victoryPanel.setVisible(true);
@@ -267,6 +271,23 @@ public class LabyrintheGUI extends JFrame {
     	gridPanel.setSolution(l);
     	 
     	
+    }
+    //traitement de chaine
+    private void mot(Sommet sommet) {
+        if (sommetStack.contains(sommet)) {
+            while (!sommetStack.isEmpty() && !sommetStack.peek().equals(sommet)) {
+                sommetStack.pop();
+            }
+        } else {
+            sommetStack.push(sommet);
+        }
+    }
+    public String stackToString() {
+        StringBuilder sb = new StringBuilder();
+        for (Sommet s : sommetStack) {
+            sb.append(s.getC());
+        }
+        return sb.toString().trim();
     }
     
     // New method to create maze based on current difficulty
@@ -341,7 +362,7 @@ public class LabyrintheGUI extends JFrame {
     public static void main(String[] args) {
         // Créer le labyrinthe
     	Laby laby = new Laby(10, 10, "src/models/dictionnaire");
-       
+        laby.printMaze();
 
         // Lancer l'application
         SwingUtilities.invokeLater(() -> {
