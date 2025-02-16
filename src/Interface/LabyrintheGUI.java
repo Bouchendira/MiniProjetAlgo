@@ -1,9 +1,6 @@
 package Interface;
 
-import models.Laby;
-import models.Sommet;
-import models.ListeSommets;
-import models.Parcours;
+import models.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -257,6 +254,7 @@ public class LabyrintheGUI extends JFrame {
             gridPanel.setPlayerPosition(playerPosition); // Mettre à jour l'affichage
             if (playerPosition.getI()==laby.getSortie().getI()&&playerPosition.getJ()==laby.getSortie().getJ()) {
             	victoryPanel.setVisible(true);
+                System.out.println("Score " + calculatePlayerScore() );
                 victoryPanel.startAnimation();
 
             }
@@ -366,6 +364,55 @@ public class LabyrintheGUI extends JFrame {
         }
         return false;
     }
+    public int calculatePlayerScore() {
+        // Product of maze dimensions
+        int baseScore = laby.getLargeur() * laby.getHauteur();
+        System.out.println("Score baseScore : "+baseScore);
+
+        // Score from the dictionary function using the player's path as text input
+        String playerPathText = stackToString();
+        int dictScore = Dictionnaire.calculerScore(playerPathText, "src/models/dictionnaire");
+        System.out.println("Score dcionnaire: "+dictScore);
+
+        int bonus = 0;
+        String playerCoords = getPlayerCoords();
+        String solutionCoords = getSolutionCoords();
+        System.out.println("Player Coords: " + playerCoords);
+        System.out.println("Shortest Coords: " + solutionCoords);
+        if (!solutionCoords.isEmpty() && playerCoords.equals(solutionCoords)) {
+            bonus = 10;
+        }
+        System.out.println("Bonus Score: " + bonus);
+
+        return baseScore + dictScore + bonus;
+    }
+    private String getPlayerCoords() {
+        StringBuilder sb = new StringBuilder();
+        for (Sommet s : sommetStack) {
+            sb.append("(").append(s.getI()).append(",").append(s.getJ()).append(")");
+        }
+        return sb.toString();
+    }
+
+
+    private String getSolutionCoords() {
+        // Compute the solution if it hasn't been computed yet.
+        if (solution == null) {
+            Parcours p = new Parcours();
+            solution = p.findShortestPath(laby.getVoisins(), laby.getEntree(), laby.getSortie());
+        }
+        if (solution == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        ListeSommets current = solution;
+        while (current != null) {
+            Sommet s = current.getVal();
+            sb.append("(").append(s.getI()).append(",").append(s.getJ()).append(")");
+            current = current.getSuivant();
+        }
+        return sb.toString();
+    }
 
 
     public static void main(String[] args) {
@@ -373,6 +420,8 @@ public class LabyrintheGUI extends JFrame {
     	Laby laby = new Laby(10, 10, "src/models/dictionnaire");
         laby.printMaze();
         System.out.println("starrrrt"+laby.getEntree().getC() +laby.getEntree().getI() +laby.getEntree().getJ() );
+
+
 
         // Lancer l'application
         SwingUtilities.invokeLater(() -> {

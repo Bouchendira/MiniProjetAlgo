@@ -116,7 +116,7 @@ public class Laby {
         }
     }
 
-    private void generationLaby() {
+    public void generationLaby() {
         // Initialize all cells with default Sommets
         for (int i = 0; i < hauteur; i++) {
             for (int j = 0; j < largeur; j++) {
@@ -125,6 +125,7 @@ public class Laby {
         }
         boolean[][] visited = new boolean[hauteur][largeur];
         generationLabyRecursive(0, 0, visited);
+        addMultiplePaths();
     }
 
     public Sommet getSommet(int i, int j) {
@@ -157,6 +158,27 @@ public class Laby {
                 voisins[i][j] = new ListeSommets(next, voisins[i][j]);
                 voisins[newI][newJ] = new ListeSommets(current, voisins[newI][newJ]);
                 generationLabyRecursive(newI, newJ, visited);
+            }
+        }
+    }
+    public void addMultiplePaths() {
+        for (int i = 0; i < hauteur; i++) {
+            for (int j = 0; j < largeur; j++) {
+                if (random.nextDouble() < 0.1) { // 10%
+                    List<int[]> possibleMoves = new ArrayList<>();
+                    if (isValid(i + 1, j)) possibleMoves.add(new int[]{i + 1, j});
+                    if (isValid(i, j + 1)) possibleMoves.add(new int[]{i, j + 1});
+                    if (isValid(i - 1, j)) possibleMoves.add(new int[]{i - 1, j});
+                    if (isValid(i, j - 1)) possibleMoves.add(new int[]{i, j - 1});
+
+                    if (!possibleMoves.isEmpty()) {
+                        int[] move = possibleMoves.get(random.nextInt(possibleMoves.size()));
+                        Sommet current = new Sommet(i, j, c[i][j]);
+                        Sommet next = new Sommet(move[0], move[1], c[move[0]][move[1]]);
+                        voisins[i][j] = new ListeSommets(next, voisins[i][j]);
+                        voisins[move[0]][move[1]] = new ListeSommets(current, voisins[move[0]][move[1]]);
+                    }
+                }
             }
         }
     }
@@ -325,6 +347,7 @@ private boolean dfs(int i, int j, int remainingLength, boolean[][] visited,
     path.remove(path.size() - 1);
     return false;
 }
+
 
 
 }
