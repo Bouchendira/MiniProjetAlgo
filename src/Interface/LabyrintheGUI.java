@@ -93,7 +93,7 @@ public class LabyrintheGUI extends JFrame {
 
         ////////////////////////
       
-        ImageIcon originalIcon = new ImageIcon("C:\\Users\\MSI\\eclipse-workspace\\MiniProjetAlgo\\src\\Interface\\2345321.png");
+        ImageIcon originalIcon = new ImageIcon("src/Interface/2345321.png");
         Image img = originalIcon.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH); // Ajuste la taille ici
         ImageIcon resizedIcon = new ImageIcon(img);
         
@@ -129,7 +129,7 @@ public class LabyrintheGUI extends JFrame {
         shortPathButtonPanel.add(shortPathButton, BorderLayout.EAST);
         
         ////////////////////
-        ImageIcon originalIcon1 = new ImageIcon("C:\\Users\\MSI\\eclipse-workspace\\MiniProjetAlgo\\src\\Interface\\1248862.png");
+        ImageIcon originalIcon1 = new ImageIcon("src/Interface/1248862.png");
         Image img1 = originalIcon1.getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH); // Ajuste la taille ici
         ImageIcon resizedIcon1 = new ImageIcon(img1);
         
@@ -195,12 +195,12 @@ public class LabyrintheGUI extends JFrame {
         
         // Créer un seul panneau pour contenir la grille et la victoire
         JPanel gamePanel = new JPanel();
-        gamePanel.setLayout(new OverlayLayout(gamePanel));  // Utiliser OverlayLayout seulement ici
+        gamePanel.setLayout(new OverlayLayout(gamePanel));
         gamePanel.add(victoryPanel);
         gamePanel.add(gridPanel);
            
         add(topPanel, BorderLayout.NORTH);
-        add(gamePanel, BorderLayout.CENTER); // Ajoutez gamePanel avec OverlayLayout ici
+        add(gamePanel, BorderLayout.CENTER);
         // Gestion des événements souris
         addMouseListener(new MouseAdapter() {
             @Override
@@ -258,6 +258,7 @@ public class LabyrintheGUI extends JFrame {
             if (playerPosition.getI()==laby.getSortie().getI()&&playerPosition.getJ()==laby.getSortie().getJ()) {
             	victoryPanel.setVisible(true);
                 victoryPanel.startAnimation();
+
             }
         }
     }
