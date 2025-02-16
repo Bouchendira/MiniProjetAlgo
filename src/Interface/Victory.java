@@ -10,6 +10,9 @@ public class Victory extends JPanel {
     private Timer fadeTimer;
     private boolean isVisible = false;
 
+    // Field to store the player's score
+    private int score = 0;
+
     // Constantes pour le design
     private static final int PANEL_WIDTH = 400;
     private static final int PANEL_HEIGHT = 200;
@@ -25,12 +28,20 @@ public class Victory extends JPanel {
     }
 
     /**
+     * Sets the score to display on the victory panel.
+     */
+    public void setScore(int score) {
+        this.score = score;
+        repaint();
+    }
+
+    /**
      * Démarre l'animation de fondu en entrée du panneau de victoire
      */
     public void startAnimation() {
         isVisible = true;
         alpha = 0f;
-        
+
         // Création et configuration du timer pour l'animation
         ActionListener animationAction = e -> {
             alpha += ANIMATION_STEP;
@@ -40,7 +51,7 @@ public class Victory extends JPanel {
             }
             repaint();
         };
-        
+
         fadeTimer = new Timer(20, animationAction);
         fadeTimer.start();
     }
@@ -55,22 +66,22 @@ public class Victory extends JPanel {
             // Configuration du rendu pour une meilleure qualité
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            
+
             // Application de la transparence pour l'animation
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 
             // Dessin du fond semi-transparent
             drawBackground(g2d);
-            
+
             // Dessin de la bordure dorée
             drawBorder(g2d);
-            
-            // Dessin du texte principal et du sous-titre
+
+            // Dessin du texte principal et du sous-titre, ainsi que le score
             drawTexts(g2d);
-            
+
             // Dessin du bouton
             drawButton(g2d);
-            
+
         } finally {
             g2d.dispose();
         }
@@ -90,24 +101,29 @@ public class Victory extends JPanel {
     private void drawBorder(Graphics2D g2d) {
         g2d.setColor(new Color(218, 165, 32));
         g2d.setStroke(new BasicStroke(4f));
-        g2d.drawRect(BORDER_PADDING, BORDER_PADDING, 
-                    getWidth() - 2 * BORDER_PADDING, 
-                    getHeight() - 2 * BORDER_PADDING);
+        g2d.drawRect(BORDER_PADDING, BORDER_PADDING,
+                getWidth() - 2 * BORDER_PADDING,
+                getHeight() - 2 * BORDER_PADDING);
     }
 
     /**
-     * Dessine les textes (titre et sous-titre)
+     * Dessine les textes (titre, sous-titre et score)
      */
     private void drawTexts(Graphics2D g2d) {
-        // Texte principal "VICTOIRE!"
+        // Texte principal "VICTOIRE !"
         g2d.setFont(new Font("Arial", Font.BOLD, 36));
         g2d.setColor(new Color(255, 223, 0));
-        drawCenteredString(g2d, "VICTOIRE !", getHeight() / 2 - 20);
+        drawCenteredString(g2d, "VICTOIRE !", getHeight() / 2 - 40);
 
         // Sous-titre
         g2d.setFont(new Font("Arial", Font.PLAIN, 18));
         g2d.setColor(Color.WHITE);
-        drawCenteredString(g2d, "Vous avez trouvé la sortie !", getHeight() / 2 + 20);
+        drawCenteredString(g2d, "Vous avez trouvé la sortie !", getHeight() / 2);
+
+        // Score affiché sous le sous-titre
+        g2d.setFont(new Font("Arial", Font.PLAIN, 16));
+        g2d.setColor(Color.WHITE);
+        drawCenteredString(g2d, "Score : " + score, getHeight() / 2 + 30);
     }
 
     /**
@@ -146,6 +162,6 @@ public class Victory extends JPanel {
     public boolean isPointInButton(Point p) {
         int buttonX = (getWidth() - BUTTON_WIDTH) / 2;
         int buttonY = getHeight() - 40;
-        return new Rectangle(buttonX, buttonY, BUTTON_WIDTH+50, BUTTON_HEIGHT+50).contains(p);
+        return new Rectangle(buttonX, buttonY, BUTTON_WIDTH + 50, BUTTON_HEIGHT + 50).contains(p);
     }
 }

@@ -253,6 +253,9 @@ public class LabyrintheGUI extends JFrame {
             System.out.println("Stack: " + stackToString());
             gridPanel.setPlayerPosition(playerPosition); // Mettre à jour l'affichage
             if (playerPosition.getI()==laby.getSortie().getI()&&playerPosition.getJ()==laby.getSortie().getJ()) {
+                int score = calculatePlayerScore();
+                victoryPanel.setScore(score);
+                victoryPanel.setVisible(true);
             	victoryPanel.setVisible(true);
                 System.out.println("Score " + calculatePlayerScore() );
                 victoryPanel.startAnimation();
