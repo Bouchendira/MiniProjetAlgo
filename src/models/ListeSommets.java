@@ -1,5 +1,5 @@
 package models;
-
+//table de liste adjacece de graphe
 public class ListeSommets {
     private Sommet val;
     private ListeSommets suivant;

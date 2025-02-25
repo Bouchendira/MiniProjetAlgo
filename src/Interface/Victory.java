@@ -42,7 +42,7 @@ public class Victory extends JPanel {
         isVisible = true;
         alpha = 0f;
 
-        // Création et configuration du timer pour l'animation
+        // Creation et configuration du timer pour l'animation
         ActionListener animationAction = e -> {
             alpha += ANIMATION_STEP;
             if (alpha >= 1f) {
@@ -63,7 +63,7 @@ public class Victory extends JPanel {
 
         Graphics2D g2d = (Graphics2D) g.create();
         try {
-            // Configuration du rendu pour une meilleure qualité
+            // Configuration du rendu pour une meilleure qualite
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -76,7 +76,7 @@ public class Victory extends JPanel {
             // Dessin de la bordure dorée
             drawBorder(g2d);
 
-            // Dessin du texte principal et du sous-titre, ainsi que le score
+            // Dessin du texte principal et du sous-titre et score
             drawTexts(g2d);
 
             // Dessin du bouton
@@ -120,7 +120,7 @@ public class Victory extends JPanel {
         g2d.setColor(Color.WHITE);
         drawCenteredString(g2d, "Vous avez trouvé la sortie !", getHeight() / 2);
 
-        // Score affiché sous le sous-titre
+        // Score afficher sous le sous-titre
         g2d.setFont(new Font("Arial", Font.PLAIN, 16));
         g2d.setColor(Color.WHITE);
         drawCenteredString(g2d, "Score : " + score, getHeight() / 2 + 30);
@@ -157,7 +157,7 @@ public class Victory extends JPanel {
     }
 
     /**
-     * Vérifie si un point est dans la zone du bouton
+     * vérifie si un point est dans la zone du bouton
      */
     public boolean isPointInButton(Point p) {
         int buttonX = (getWidth() - BUTTON_WIDTH) / 2;
