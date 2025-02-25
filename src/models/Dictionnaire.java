@@ -51,8 +51,12 @@ public class Dictionnaire {
         System.out.println("score: " + s);
 
         /////
-        int s = calculerScore("tback", "src/models/dictionnaire");
-        System.out.println("score: " + s);
+        int s2 = calculerScore("tback", "src/models/dictionnaire");
+        System.out.println("score 2 : " + s2);
+
+        /////
+        int s3 = calculerScore("tbpoissonwaeitravailtnahcelfenetrmmefrusengatnomchateboxeack", "src/models/dictionnaire");
+        System.out.println("score 3 : " + s3);
 
 
 
